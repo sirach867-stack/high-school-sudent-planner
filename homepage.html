@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High School Planner Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { padding: 30px; background-color: #f8fafc; color: #1e293b; }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, #635bff, #5c54a4, #8b5cf6);
+            padding: 35px 40px;
+            border-radius: 24px;
+            color: #ffffff;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px rgba(99, 91, 255, 0.15);
+        }
+        .welcome-banner h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+        .welcome-banner p { font-size: 15px; opacity: 0.9; }
+
+        .quote-bar {
+            background: #ffffff; border-radius: 16px; padding: 20px 24px;
+            border-left: 5px solid #635bff; margin-bottom: 30px;
+            display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        }
+        .quote-text { font-size: 14px; font-weight: 600; color: #475569; font-style: italic; }
+
+        .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 30px; }
+        .status-card { border-radius: 20px; padding: 28px; color: #ffffff; min-height: 180px; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        .card-blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        .card-purple { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
+        .card-orange { background: linear-gradient(135deg, #ea580c, #f97316); }
+        
+        .card-label { font-size: 13px; font-weight: 800; text-transform: uppercase; }
+        .card-number { font-size: 56px; font-weight: 800; line-height: 1; margin-top: 15px; }
+
+        /* Modified lower layout to span full width cleanly */
+        .lower-layout { display: block; width: 100%; }
+        .content-panel { background: #ffffff; border-radius: 20px; padding: 26px; border: 1px solid #e2e8f0; width: 100%; }
+        .panel-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+        
+        .queue-item { padding: 14px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="welcome-banner">
+        <h1 id="dash-greeting">Welcome Back! 👋</h1>
+        <p id="dash-date">Loading profile data parameters...</p>
+    </div>
+
+    <div class="quote-bar">
+        <span>⚡</span>
+        <span class="quote-text">"Mistakes are proof that you are trying. Keep crushing it!"</span>
+    </div>
+
+    <div class="status-grid">
+        <div class="status-card card-blue">
+            <div class="card-label">Homework Status</div>
+            <div id="stat-homework" class="card-number">0</div>
+        </div>
+        <div class="status-card card-purple">
+            <div class="card-label">Classes Today</div>
+            <div id="stat-classes" class="card-number">6</div>
+        </div>
+        <div class="status-card card-orange">
+            <div id="countdown-label" class="card-label">Next Deadline</div>
+            <div id="stat-countdown" class="card-number">0</div>
+        </div>
+    </div>
+
+    <div class="lower-layout">
+        <div class="content-panel">
+            <div class="panel-title">📌 Today's Priority Focus Queue</div>
+            <div id="focus-queue-container">
+                </div>
+        </div>
+    </div>
+
+    <script src="../js/homepage.js"></script>
+</body>
+</html>

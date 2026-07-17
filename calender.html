@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Calendar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { padding: 30px; background-color: #f8fafc; color: #1e293b; min-height: 100vh; }
+
+        /* Vibrant Gradient Header Banner matching your main Dashboard style */
+        .calendar-banner {
+            background: linear-gradient(135deg, #635bff, #a855f7);
+            color: white; padding: 24px 35px; border-radius: 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 24px; box-shadow: 0 10px 25px -5px rgba(99, 91, 255, 0.2);
+        }
+        .banner-left h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+        .banner-left p { font-size: 14px; opacity: 0.9; font-weight: 500; }
+        
+        .controls-wrapper { display: flex; align-items: center; gap: 10px; }
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white; padding: 10px 18px; border-radius: 12px; font-weight: 600;
+            font-size: 14px; cursor: pointer; transition: 0.2s;
+        }
+        .nav-btn:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-1px); }
+        .btn-today { background: white; color: #635bff; border: none; }
+        .btn-today:hover { background: #f8fafc; color: #4f46e5; }
+
+        /* Clean White Grid Layout */
+        .calendar-sheet {
+            background: #ffffff; border-radius: 24px; border: 1px solid #e2e8f0;
+            padding: 24px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        }
+        
+        .weekdays-header {
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            text-align: center; font-weight: 700; font-size: 13px;
+            color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;
+            padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;
+        }
+
+        .days-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            grid-auto-rows: minmax(110px, 1fr); gap: 8px; margin-top: 12px;
+        }
+
+        .day-cell {
+            background: #f8fafc; padding: 12px; border-radius: 16px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            transition: all 0.2s ease; border: 1px solid transparent; cursor: pointer;
+        }
+        .day-cell:hover { background: #ffffff; border-color: #cbd5e1; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        
+        /* Current day highlight styling */
+        .day-cell.today { background: #eff6ff; border-color: #bfdbfe; }
+        .day-cell.today .day-number { background: #635bff; color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 4px 10px rgba(99, 91, 255, 0.3); }
+        
+        .day-number { font-size: 14px; font-weight: 700; color: #475569; }
+        .day-cell.empty { background: transparent; border: none; cursor: default; pointer-events: none; }
+        
+        /* Inside Cell Events */
+        .event-container { margin-top: 6px; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+        .event-tag {
+            font-size: 11px; font-weight: 700; padding: 4px 8px;
+            border-radius: 8px; background: rgba(99, 91, 255, 0.1); color: #635bff;
+            white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
+            border-left: 3px solid #635bff;
+        }
+
+        /* Task Entry Modal Window */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-body {
+            background: white; padding: 30px; border-radius: 24px; width: 100%;
+            max-width: 400px; border: 1px solid #e2e8f0; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+        .modal-body h3 { font-size: 18px; font-weight: 800; margin-bottom: 16px; color: #1e293b; letter-spacing: -0.5px; }
+        .input-box { width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s; margin-bottom: 20px; }
+        .input-box:focus { border-color: #635bff; box-shadow: 0 0 0 4px rgba(99, 91, 255, 0.1); }
+        
+        .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+        .action-btn { padding: 10px 18px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+        .btn-cancel { background: #f1f5f9; color: #475569; }
+        .btn-save { background: #635bff; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="calendar-banner">
+        <div class="banner-left">
+            <h1 id="month-year-title">Month Year</h1>
+            <p>Schedule assignments, deadlines, and exams</p>
+        </div>
+        <div class="controls-wrapper">
+            <button class="nav-btn btn-today" onclick="jumpToToday()">Today</button>
+            <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
+            <button class="nav-btn" onclick="changeMonth(1)">▶</button>
+        </div>
+    </div>
+
+    <div class="calendar-sheet">
+        <div class="weekdays-header">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+        </div>
+        <div id="days-grid-box" class="days-grid"></div>
+    </div>
+
+    <div id="event-modal" class="modal-overlay">
+        <div class="modal-body">
+            <h3>Add New Planner Event</h3>
+            <input type="text" id="event-input-field" class="input-box" placeholder="e.g., Biology Lab Due">
+            <div class="modal-actions">
+                <button class="action-btn btn-cancel" onclick="closeEventModal()">Cancel</button>
+                <button class="action-btn btn-save" onclick="saveEventData()">Save Task</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentYear, currentMonth;
+        let activeSelectedDateStr = "";
+
+        const userKey = localStorage.getItem('portal_current_user') || 'sirach';
+        const STORAGE_DB_KEY = `user_${userKey}_calendar_events`;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            currentYear = today.getFullYear();
+            currentMonth = today.getMonth();
+            buildCalendarCells();
+        });
+
+        function buildCalendarCells() {
+            const container = document.getElementById('days-grid-box');
+            const titleDisplay = document.getElementById('month-year-title');
+            if(!container || !titleDisplay) return;
+
+            container.innerHTML = "";
+            
+            const firstDayDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+            const totalDaysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const namesArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            titleDisplay.textContent = `${namesArray[currentMonth]} ${currentYear}`;
+            const globalEventsMap = JSON.parse(localStorage.getItem(STORAGE_DB_KEY)) || {};
+
+            for(let i = 0; i < firstDayDayIndex; i++) {
+                const blank = document.createElement('div');
+                blank.className = 'day-cell empty';
+                container.appendChild(blank);
+            }
+
+            const activeTodayObject = new Date();
+            for(let dayNum = 1; dayNum <= totalDaysInCurrentMonth; dayNum++) {
+                const dayBox = document.createElement('div');
+                dayBox.className = 'day-cell';
+                
+                const standardIsoDateString = `${currentYear}-${String(currentMonth + 1).padStart(2,'0')}-${String(dayNum).padStart(2,'0')}`;
+                
+                if (dayNum === activeTodayObject.getDate() && currentMonth === activeTodayObject.getMonth() && currentYear === activeTodayObject.getFullYear()) {
+                    dayBox.classList.add('today');
+                }
+
+                dayBox.innerHTML = `<span class="day-number">${dayNum}</span><div class="event-container" id="box-${standardIsoDateString}"></div>`;
+                dayBox.addEventListener('click', () => openEventModal(standardIsoDateString));
+                container.appendChild(dayBox);
+
+                if (globalEventsMap[standardIsoDateString]) {
+                    const innerTargetList = dayBox.querySelector('.event-container');
+                    globalEventsMap[standardIsoDateString].forEach(item => {
+                        const label = document.createElement('div');
+                        label.className = 'event-tag';
+                        label.textContent = item.title;
+                        innerTargetList.appendChild(label);
+                    });
+                }
+            }
+        }
+
+        function changeMonth(step) {
+            currentMonth += step;
+            if(currentMonth > 11) { currentMonth = 0; currentYear++; }
+            else if(currentMonth < 0) { currentMonth = 11; currentYear--; }
+            buildCalendarCells();
+        }
+
+        function jumpToToday() {
+            const today = new Date();
+            currentYear = today.getFullYear();
+            currentMonth = today.getMonth();
+            buildCalendarCells();
+        }
+
+        function openEventModal(dateStr) {
+            activeSelectedDateStr = dateStr;
+            document.getElementById('event-input-field').value = "";
+            document.getElementById('event-modal').style.display = 'flex';
+        }
+
+        function closeEventModal() { document.getElementById('event-modal').style.display = 'none'; }
+
+        function saveEventData() {
+            const enteredText = document.getElementById('event-input-field').value.trim();
+            if(!enteredText) return closeEventModal();
+
+            let dataMap = JSON.parse(localStorage.getItem(STORAGE_DB_KEY)) || {};
+            if(!dataMap[activeSelectedDateStr]) dataMap[activeSelectedDateStr] = [];
+
+            dataMap[activeSelectedDateStr].push({ title: enteredText });
+            localStorage.setItem(STORAGE_DB_KEY, JSON.stringify(dataMap));
+            
+            closeEventModal();
+            buildCalendarCells();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { padding: 30px; background-color: #f1f5f9; color: #334155; }
+        
+        /* Premium Purple Title Banner */
+        .page-header {
+            background: linear-gradient(135deg, #5c54a4, #7a71c7);
+            padding: 24px;
+            border-radius: 16px;
+            color: #ffffff;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 20px rgba(92, 84, 164, 0.1);
+        }
+        .page-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+        .page-header p { font-size: 14px; opacity: 0.9; }
+
+        /* Smooth Interactive Plus Action Button */
+        .toggle-form-btn {
+            background-color: #ffffff;
+            color: #5c54a4;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .toggle-form-btn:hover { background-color: #f8fafc; transform: scale(1.05); }
+        .toggle-form-btn.active-rotate { transform: rotate(45deg); background-color: #fee2e2; color: #ef4444; }
+
+        /* Collapsible Form Card Panel Drawer (Hidden by default) */
+        .content-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+        }
+        
+        #add-class-drawer {
+            display: none; /* Controlled dynamically by JavaScript */
+            animation: slideDown 0.25s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 18px;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Responsive Inputs Grid Layout */
+        .input-grid {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr;
+            gap: 12px;
+        }
+        
+        /* Time Selectors Row Layout */
+        .time-picker-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .time-picker-row label { font-size: 13px; font-weight: 600; color: #64748b; }
+
+        @media(max-width: 768px) { 
+            .input-grid { grid-template-columns: 1fr; }
+            .time-picker-row { flex-direction: column; align-items: flex-start; }
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #334155;
+            outline: none;
+            background-color: #ffffff;
+            transition: border-color 0.2s;
+        }
+        .input-field:focus { border-color: #5c54a4; }
+
+        /* Horizontal Day Checkboxes */
+        .days-picker-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+        .days-checkbox-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .day-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .day-checkbox-item input {
+            accent-color: #5c54a4;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background-color: #5c54a4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            align-self: flex-start;
+            transition: background 0.2s;
+        }
+        .submit-btn:hover { background-color: #4a428c; }
+
+        /* Clean Timetable Layout */
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        .schedule-table th {
+            color: #64748b;
+            font-weight: 600;
+            padding: 12px 16px;
+            border-bottom: 2px solid #e2e8f0;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+        .schedule-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #475569;
+        }
+        .schedule-table tr:last-child td { border-bottom: none; }
+        
+        .day-badge {
+            background-color: #e0e7ff;
+            color: #4338ca;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .room-badge {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .remove-class-trigger {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .remove-class-trigger:hover { color: #ef4444; }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <div>
+            <h1>Class Schedule</h1>
+            <p>Map out your classes, timings, locations, and teachers to stay ahead of your day.</p>
+        </div>
+        <button id="toggle-form-trigger" class="toggle-form-btn" title="Toggle Input Panel">＋</button>
+    </div>
+
+    <div id="add-class-drawer" class="content-card">
+        <div class="card-title">🏫 Add Class Information</div>
+        <div class="form-container">
+            
+            <div class="input-grid">
+                <input type="text" id="class-name" class="input-field" placeholder="Subject Name (e.g., Chemistry)...">
+                <input type="text" id="class-teacher" class="input-field" placeholder="Teacher Name (e.g., Mr. Smith)...">
+                <input type="text" id="class-room" class="input-field" placeholder="Room # (e.g., 204)...">
+            </div>
+
+            <div class="time-picker-row">
+                <label>Start Time:</label>
+                <select id="start-time" class="input-field" style="width: auto; min-width: 130px;"></select>
+                
+                <label style="margin-left: 10px;">End Time:</label>
+                <select id="end-time" class="input-field" style="width: auto; min-width: 130px;"></select>
+            </div>
+
+            <div>
+                <div class="days-picker-label">Select Days for this Class:</div>
+                <div class="days-checkbox-row">
+                    <label class="day-checkbox-item"><input type="checkbox" value="Monday" class="day-cb"> Mon</label>
+                    <label class="day-checkbox-item"><input type="checkbox" value="Tuesday" class="day-cb"> Tue</label>
+                    <label class="day-checkbox-item"><input type="checkbox" value="Wednesday" class="day-cb"> Wed</label>
+                    <label class="day-checkbox-item"><input type="checkbox" value="Thursday" class="day-cb"> Thu</label>
+                    <label class="day-checkbox-item"><input type="checkbox" value="Friday" class="day-cb"> Fri</label>
+                </div>
+            </div>
+
+            <button id="schedule-submit-btn" class="submit-btn">Add to Timetable</button>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <div class="card-title">⏳ Daily Timetable Grid</div>
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Class Subject</th>
+                    <th>Teacher</th>
+                    <th>Room Location</th>
+                    <th>Time Slot</th>
+                </tr>
+            </thead>
+            <tbody id="schedule-table-body">
+                </tbody>
+        </table>
+    </div>
+
+    <script src="../js/schedule.js"></script>
+</body>
+</html>
