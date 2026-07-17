@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        // Access Control Gate: Send back to login instantly if no session exists
+        if (!localStorage.getItem('portal_current_user')) {
+            window.location.href = "auth.html";
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Hub - Homework Stack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { padding: 30px; background-color: #f8fafc; color: #1e293b; }
+        
+        .header { margin-bottom: 24px; }
+        .header h1 { font-size: 28px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; }
+        .header p { font-size: 14px; color: #64748b; margin-top: 4px; }
+
+        /* Assignment Creation Card */
+        .card { 
+            background: #ffffff; 
+            border-radius: 16px; 
+            padding: 24px; 
+            border: 1px solid #e2e8f0; 
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+        }
+        
+        .form-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 16px; 
+            margin-bottom: 16px; 
+        }
+        
+        .input-field { 
+            width: 100%; 
+            padding: 12px 14px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 10px; 
+            font-size: 14px; 
+            outline: none;
+            background: #f8fafc;
+            transition: all 0.2s;
+        }
+        .input-field:focus {
+            border-color: #635bff;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(99, 91, 255, 0.1);
+        }
+        
+        .btn { 
+            background: #635bff; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            font-size: 14px;
+            cursor: pointer; 
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #5c54a4; }
+
+        /* Custom Assignment Item Outputs */
+        .task-list { list-style: none; }
+        .task-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 16px 20px; 
+            background: white; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 14px; 
+            margin-bottom: 12px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+            transition: transform 0.2s;
+        }
+        .task-item:hover { transform: translateY(-1px); }
+        
+        .task-info h3 { font-size: 15px; font-weight: 700; color: #0f172a; }
+        .task-meta { font-size: 13px; color: #64748b; margin-top: 4px; display: flex; gap: 12px; }
+        
+        .type-badge {
+            font-size: 11px; font-weight: 700; background: #eeebff; color: #635bff;
+            padding: 2px 8px; border-radius: 6px; text-transform: uppercase;
+        }
+
+        .delete-btn { 
+            background: #fee2e2; 
+            color: #ef4444; 
+            border: none; 
+            padding: 8px 14px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .delete-btn:hover { background: #ef4444; color: white; }
+        
+        .empty-state { text-align: center; color: #94a3b8; padding: 40px; font-style: italic; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Assignment Ledger Matrix</h1>
+        <p>Log your tasks, course assessments, and upcoming deadlines.</p>
+    </div>
+
+    <div class="card">
+        <form id="homework-form" onsubmit="addHomework(event)">
+            <div class="form-grid">
+                <input type="text" id="hw-task" class="input-field" placeholder="Assignment/Task Title" required>
+                <input type="text" id="hw-subject" class="input-field" placeholder="Subject Name" required>
+                <input type="date" id="hw-date" class="input-field" required>
+                <select id="hw-type" class="input-field">
+                    <option value="Homework">Homework</option>
+                    <option value="Project">Project</option>
+                    <option value="Exam">Exam</option>
+                </select>
+            </div>
+            <button type="submit" class="btn">Add New Assignment</button>
+        </form>
+    </div>
+
+    <ul id="homework-list" class="task-list"></ul>
+
+    <script src="../js/homework.js"></script>
+</body>
+</html>
